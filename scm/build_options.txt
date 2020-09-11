@@ -1,0 +1,187 @@
+#------------------------------------------------------------------------------#
+# Settings in this file are used by the Jenkins Shared Pipeline. All settings  #
+# are optional, except where marked as required. If optional parameters are    #
+# absent, defaults are set within the Pipeline. Default configurations         #
+# used in the Pipeline are usually set up during Jenkins server provisioning.  #
+#------------------------------------------------------------------------------#
+
+# Nexus IQ app name (required). Must correspond to app name in https://iq.nexus.equifax.com
+nexusIQ=Secure_SDLC_demo
+
+# use a different service account other than the default for nexusiq (optional). This is
+# to support multiple teams share a single Jenkins instance with multile service accounts
+# and multiple nexusIQ orgs/apps. Create a username/password credential with unique ID in
+# Jenkins and enable this flag to use the respective ID.
+#nexusIqSvcAccount=svcAccount
+
+# mvnSettingsXML (optional). The name of a Maven settings.xml to use. settings.xml typically
+# contains Nexus repo server URL's. It is normally stored in the ~jenkins/.m2 directory
+# used by the Maven build process. If a Jenkins instance is shared by a team
+# needing to deploy to different Nexus repos, the settings.xml file needs to be
+# changed. There is generally no command line access to the Jenkins server, so the
+# Jenkins 'Managed Files' plugin provides an alternate way to manage this file.
+# Pipeline defaults to using a Managed File named defaultSettings. Sample call:
+#mvnSettingsXML=icsaasSettings
+
+# Nexus repo names (Required). The name of the Nexus repo's to install artifacts/rpms from.
+# Used by rundeck app-deploy installation script. If set here, they override same-named
+# Jenkins environment variables. Useful for teams who use the CICD tribe-provided app
+# deployment mechanism and who use different Nexus repos for artifact storage.
+# Nexus release repo name  (mandatory). The name of the Nexus release repo to download the
+# release artifact and rebuild the docker image to push to prod gcr.
+mavenReleaseRepo=securesdlc-releases-maven-hosted
+mavenSnapshotRepo=securesdlc-snapshots-maven-hosted
+
+# releaseBranch (optional). The name of the git branch used to create releases from.
+# Defaults to 'master'. releaseBranch name is also used when deciding which branches
+# to run NexusIQ and Sonar testing against; testing will always be run against the
+# branch defined here. Sample call:
+#releaseBranch=m2
+
+# devIntegrationBranch (optional). The name of a 'Development Integration' branch.
+# devIntegrationBranch name is also used when deciding which branches
+# to run NexusIQ and Sonar testing against; testing will always be run against the
+# branch defined here. Sample call:
+#devIntegrationBranch=develop
+
+# enableSonar (optional). Run Sonar against the current branch. Default is
+# to run Sonar (flag = true). Set flag to any other value to disable Sonar run.
+# Setting flag to false may be useful for early development/proof of concept
+# activity on feature branches.
+# This flag is overridden in the following Use Cases:
+#   Current branch is the devIntegrationBranch or releaseBranch or Pull Request (PR)
+#   Current app version is a release (non-Snapshot) version
+# Sample call:
+enableSonar=false
+
+# sonarQubeServer (optional). This is the id of the Sonarqube server(other than the default)
+# that you would like to submit your code to. This server should be set up in your
+# Jenkins configuration prior to running the pipeline.
+#sonarQubeServer=
+
+# enableSonarSleep (optional). Default is set to 10, based on the project size
+#increase the sleep time
+#enableSonarSleep=20
+
+# enableNexusIQ (optional). Run NexusIQ against the current branch. Default is
+# to run NexusIQ (flag = true). Set flag to any other value to disable Sonar run.
+# Setting flag to false may be useful for early development/proof of concept
+# activity on feature branches.
+# This flag is overridden in the following Use Cases:
+#   Current branch is the devIntegrationBranch or releaseBranch or Pull Request (PR)
+#   Current app version is a release (non-Snapshot) version
+# Sample call:
+enableNexusIQ=false
+
+# artifactExtension (optional). Artifact extension identifier for jar/war based deployments.
+artifactExtension=jar
+
+# mvnBuildParams (optional). Parameters used to change the way Maven compiles an application.
+# Parameter should be life cycle/goal as well as any '-D' params
+# Default is 'package'. Sample call:
+# mvnBuildParams=package -DskipTests
+
+# mvnDeployParams (optional). Parameters used to change the way Maven deploys/uploads an application
+# to a Nexus repo.
+# Parameter should be life cycle/goal as well as any '-D' params
+# Default is 'deploy'. Sample call:
+# mvnDeployParams=deploy
+
+# useLocalMvnRepo (optional). Parameters used to change the way Maven downloads & save the application
+# dependencies local to workspace vs default .m2 location.
+# Default is 'true'.
+#useLocalMvnRepo=false
+
+#createImage (optional). If your application is not a container application, set this flag to false.
+#createImage=false
+
+#scanImage (optional). Scan's image for vulnerabilities, this stage will be mandatory once we have
+#central gcr in place.
+scanImage=false
+
+# dockerFileDirectory (optional). Enable this flag if the docker image is part of a module in
+# a multi module maven project. Dockerfile should be available in the same directory as the
+# projects pom.xml
+#dockerFileDirectory=helloworld-springboot
+
+
+## GCP ##
+
+# set build agent labels (mandatory)
+build_agent_label=build-pod
+
+# maven and jdk image name for the project compilation (mandatory).
+#buildContainerName=mvn3jdk8
+
+# kanikoTimeout (optional) kaniko timeout period
+#kanikoTimeout=180
+
+# kanikoBuildArgs (optional). Enable this flag if your Dockerfile has arguments other than the default.
+#kanikoBuildArgs=
+
+# npe gcr details (optional). Default is defined in managed Jenkins -> environment valuables.
+gcrProjectId=
+
+# enableImageAttestation (optional). Default is to skip Attestation (flag = false).
+#If the gke cluster is enabled with binary authorization and have the policies,
+# then enable and set this flag to true.
+enableImageAttestation=true
+
+# gcr details for image attestation (Optional: enable this only if the enableImageAttestation property is set to true).
+# Defaults are defined in managed Jenkins -> environment valuables.
+gcrAttestor=eops-cicd-mbps-npe-attestor
+secProject=sec-crypto-iam-npe-c8ed
+kmsKeyring=eops-cicd-mbps-npe-497a_jaas
+gcrAttestorkey=eops-cicd-mbps-npe-attestor-key
+
+# prod gcr details (optional). Default is defined in managed Jenkins -> environment valuables.
+prodGcrProjectId=
+
+# prodEnableImageAttestation (optional). If the gke cluster is enabled with binary authorization and have the policies,
+# then enable and set this flag to true.
+prodEnableImageAttestation=false
+
+# prod gcr details for image attestation (Optional: enable this only if the prodEnableImageAttestation property is set to true).
+# Defaults are defined in managed Jenkins -> environment valuables.
+prodGcrAttestor=eops-cicd-mbps-npe-attestor
+prodSecProject=sec-crypto-iam-npe-c8ed
+prodKmsKeyring=eops-cicd-mbps-npe-497a_jaas
+prodGcrAttestorkey=eops-cicd-mbps-npe-attestor-key
+
+# googleChatRoomJenkinsId (Optional: enable this if you need build status notifications sent to your google chat room). Defaults are set to false.
+gChatRoomJenkinsId=
+gChatNotifyAborted=false
+gChatNotifyFailure=false
+#gChatNotifyNotBuilt=
+gChatNotifySuccess=false
+gChatNotifyUnstable=false
+gChatNotifyBackToNormal=false
+#gChatSuppressInfoLoggers=
+#gChatSameThreadNotification=
+
+# fortify options
+# REQUIRED
+fortifyAppId=103754
+fortifyJiraProject=
+fortifyUsername=srinivas.eruvanti
+# OPTIONAL
+enableFortify=true
+fortifyExeJars=true
+fortifyLangLevel=1.8
+fortifyDevBaseRelease=SECURE_SDLC_DEMO_NEW_RELEASE
+fortifyPatCredentials=fortifyPAT
+#fortifyJiraCredentials=defaultFortifyJiraUserCred
+fortifyEnableBugtrackerJob=false
+fortifyBugtrackerJob=/fortifyBugtracker
+#fortifyCron=0 0 31 2 *
+#fortifyMicroserviceName=myMicroservice
+fortifySrcExclude=scm
+
+# enable auto deployments to npe environment
+appDeploy=false
+npeDeployJobPath=
+deployAgentLabel=
+deployGcrProjectId=
+projectIdClusterNamespaceApiProxy=
+clusterLocation=
+#deployBranchName=master
